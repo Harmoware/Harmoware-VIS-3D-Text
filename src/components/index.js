@@ -68,8 +68,10 @@ export default class Controller extends React.Component {
               <button onClick={this.onClick.bind(this,'zoom-out')} className='harmovis_button'>－</button>
               <button onClick={this.onClick.bind(this,'reset')} className='harmovis_button'>RESET</button>
             </li>
-            <li className="flex_column">
-              <div style={{'width':'500%'}}>elapsedTime</div><div style={{'width':'50%'}}>{((settime*1000)|0)/1000}</div>
+            <li className="flex_row">
+              <label htmlFor="ElapsedTimeValue">elapsedTime</label>
+              <ElapsedTimeValue settime={settime} timeBegin={timeBegin} timeLength={timeLength} actions={actions}
+              min={leading*-1} id="ElapsedTimeValue" />
             </li>
             <li className="flex_row">
               <ElapsedTimeRange settime={settime} timeLength={timeLength} timeBegin={timeBegin} actions={actions}

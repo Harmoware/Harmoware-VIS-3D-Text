@@ -23,7 +23,7 @@ export const Text3dDataInput = (props)=>{
             let endTime = Number.MIN_SAFE_INTEGER
             const workData = filterData.map((data)=>{
                 const [strElapsedtime,shikibetu,x,y,z,text] = data
-                const elapsedtime = parseInt(strElapsedtime)*10
+                const elapsedtime = parseInt(strElapsedtime)
                 endTime = Math.max(endTime,elapsedtime)
                 return {
                     elapsedtime:elapsedtime,
@@ -41,7 +41,7 @@ export const Text3dDataInput = (props)=>{
                 return prev
             },{})
             const text3dData = Object.values(idTable).map((data)=>{
-                data.push({elapsedtime:endTime+1})
+                data.push({elapsedtime:endTime+0.1})
                 return {operation:data}
             })
             console.log({text3dData})

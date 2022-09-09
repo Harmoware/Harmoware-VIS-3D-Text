@@ -108,7 +108,7 @@ const App = (props)=>{
 
   React.useEffect(()=>{
     actions.setInitialViewChange(false);
-    actions.setSecPerHour(3600);
+    actions.setSecPerHour(36000);
     actions.setLeading(0);
     actions.setTrailing(0);
     actions.setAnimatePause(true);

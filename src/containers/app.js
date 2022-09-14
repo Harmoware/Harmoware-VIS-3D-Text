@@ -263,7 +263,7 @@ const App = (props)=>{
           ]}
         />
       </div>
-      <div className="harmovis_footer">
+      <div draggable="true" className="harmovis_footer drag-and-drop">
         target:{`[${viewState.target[0]},${viewState.target[1]},${viewState.target[2]}]`}&nbsp;
         rotationX:{viewState.rotationX}&nbsp;
         rotationOrbit:{viewState.rotationOrbit}&nbsp;

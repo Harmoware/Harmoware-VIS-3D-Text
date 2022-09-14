@@ -37,6 +37,7 @@ const App = (props)=>{
   const [textSiza, setTextSiza] = useState(10);
   const [clusterColor, setClusterColor] = useState(undefined);
   const [shikibetuTbl, setShikibetuTbl] = useState([]);
+  let dragged = {target:null,x:0,y:0}
   const { actions, viewport, movesbase, movedData, loading, settime } = props;
 
   const text3dData = movedData.filter(x=>x.position)
@@ -112,6 +113,24 @@ const App = (props)=>{
     actions.setLeading(0);
     actions.setTrailing(0);
     actions.setAnimatePause(true);
+    document.addEventListener("dragstart", event => {
+      dragged.target = event.target
+      dragged.x = event.pageX - dragged.target.offsetLeft
+      dragged.y = event.pageY - dragged.target.offsetTop
+      dragged.target.classList.add("drag")
+    })
+    document.addEventListener("dragover", event => {
+      event.preventDefault()
+    })
+    document.addEventListener("drop", event => {
+      event.preventDefault()
+      const drag = document.getElementsByClassName("drag")[0]
+      drag.style.top = event.pageY - dragged.y + "px";
+      drag.style.left = event.pageX - dragged.x + "px";
+      dragged.target.classList.remove("drag")
+      dragged = {target:null,x:0,y:0}
+      console.log(`drop ${drag.style.top} ${drag.style.left}`)
+    })
   },[])
 
   const updateState = (updateData)=>{
@@ -261,6 +280,7 @@ const App = (props)=>{
           }
         </g>
       </svg>
+      <div draggable="true" className="drag-and-drop">●</div>
       <LoadingIcon loading={loading} />
       <FpsDisplay />
     </Container>

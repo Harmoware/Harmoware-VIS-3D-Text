@@ -8,6 +8,7 @@ import Clustering from 'density-clustering';
 import Controller from '../components';
 
 const MAPBOX_TOKEN = process.env.MAPBOX_ACCESS_TOKEN; //Acquire Mapbox accesstoken
+const titleimg = '../../data/title.png';
 
 const INITIAL_VIEW_STATE = {
   target: [0, 0, 0],
@@ -114,7 +115,12 @@ const App = (props)=>{
     actions.setTrailing(0);
     actions.setAnimatePause(true);
     document.addEventListener("dragstart", event => {
-      dragged.target = event.target
+      const className = event.target.className
+      if(className.includes('drag-and-drop')){
+        dragged.target = event.target
+      }else{
+        dragged.target = event.target.closest('.drag-and-drop')
+      }
       dragged.x = event.pageX - dragged.target.offsetLeft
       dragged.y = event.pageY - dragged.target.offsetTop
       dragged.target.classList.add("drag")
@@ -280,7 +286,12 @@ const App = (props)=>{
           }
         </g>
       </svg>
-      <div draggable="true" className="drag-and-drop">●</div>
+      <div draggable="true" className="drag-and-drop">
+        <img src={titleimg}/>
+      </div>
+      <div draggable="true">
+        <img className="drag-and-drop" src={titleimg}/>
+      </div>
       <LoadingIcon loading={loading} />
       <FpsDisplay />
     </Container>

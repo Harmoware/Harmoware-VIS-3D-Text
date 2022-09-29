@@ -273,7 +273,7 @@ const App = (props)=>{
 export default connectToHarmowareVis(App);
 
 const MovingImage = (props)=>{
-  return(<div id="imagecanvas">{props.titleimglist.map((titleimg,idx)=>{
+  return(<div className="imagecanvas">{props.titleimglist.map((titleimg,idx)=>{
     const top = (idx*0)%window.innerHeight
     const left = (idx*0)%window.innerWidth
     return(<MovingElement key={idx} imgsrc={titleimg} title={`${idx+1} : ${titleimg}`}
@@ -291,6 +291,20 @@ const MovingElement = (props)=>{
   const {className, imgsrc, style, title} = props
   let dragged = {target:undefined,x:0,y:0,degree:0,rotate:0,scaleX:1,scaleY:1}
   const imgRef = React.useRef(undefined)
+
+  const mouseup = event=>{
+    event.preventDefault()
+    const drag = document.getElementsByClassName('drag')[0]
+    if(drag){
+      drag.classList.remove('drag')
+      dragged = {target:undefined,x:0,y:0,degree:0,rotate:0,scaleX:1,scaleY:1}
+    }
+    const rotate = document.getElementsByClassName('rotate')[0]
+    if(rotate){
+      rotate.classList.remove('rotate')
+      dragged = {target:undefined,x:0,y:0,degree:0,rotate:0,scaleX:1,scaleY:1}
+    }
+  }
 
   React.useEffect(()=>{
     if(imgRef.current !== undefined){
@@ -356,19 +370,9 @@ const MovingElement = (props)=>{
           }
         }
       })
-      imgRef.current.addEventListener('mouseup', event=>{
-        event.preventDefault()
-        const drag = document.getElementsByClassName('drag')[0]
-        if(drag){
-          drag.classList.remove('drag')
-          dragged = {target:undefined,x:0,y:0,degree:0,rotate:0,scaleX:1,scaleY:1}
-        }
-        const rotate = document.getElementsByClassName('rotate')[0]
-        if(rotate){
-          rotate.classList.remove('rotate')
-          dragged = {target:undefined,x:0,y:0,degree:0,rotate:0,scaleX:1,scaleY:1}
-        }
-      })
+      imgRef.current.addEventListener('mouseup', event=>mouseup(event))
+      imgRef.current.addEventListener('mouseleave', event=>mouseup(event))
+      imgRef.current.addEventListener('mouseout', event=>mouseup(event))
       imgRef.current.addEventListener('wheel', event=>{
         console.log(`wheelDelta:${event.wheelDelta}`)
       })

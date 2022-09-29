@@ -179,6 +179,13 @@ const TransformController = (props)=>{
     select.style.left = `${value}px`
   }
 
+  const onClick = ()=>{
+    const select = document.getElementsByClassName('select')
+    for(const e of select){
+      e.classList.remove('select')
+    }
+  }
+
   return (<>{select === undefined ? null:
     <ul className="flex_list">
       <li className="flex_row">Image Item Control</li>
@@ -217,6 +224,9 @@ const TransformController = (props)=>{
           min={0} max={2} step={1/select.height} onChange={onChangeScaleY}
           className="harmovis_input_range" id="scaleY" />
         {`: ${Math.round(scaleY*select.height)}px`}
+      </li>
+      <li className="flex_row">
+        <button onClick={onClick} className='harmovis_button'>release</button>
       </li>
     </ul>
     }</>

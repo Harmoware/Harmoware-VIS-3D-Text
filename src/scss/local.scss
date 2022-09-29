@@ -44,13 +44,8 @@ input.harmovis_input_number[type="number"]{
   text-align: right;
   width: 100%;
 }
-.drag-and-drop {
-  cursor: grab ;
-  position: absolute;
-  z-index: 1000;
-}
 .click-and-move {
-  cursor: grab ;
+  cursor: pointer ;
   position: absolute;
   z-index: 1000;
 }

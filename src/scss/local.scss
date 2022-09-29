@@ -2,7 +2,7 @@
 
 div.harmovis_controller {
   @extend .harmovis_controller;
-  width: 230px;
+  width: 240px;
   ul {
     list-style-type: none; 
     padding: 0px; 
@@ -49,6 +49,18 @@ input.harmovis_input_number[type="number"]{
   position: absolute;
   z-index: 1000;
 }
+.click-and-move {
+  cursor: grab ;
+  position: absolute;
+  z-index: 1000;
+}
 .drag {
   z-index: 1001;
+}
+.rotate {
+  z-index: 1001;
+}
+.select {
+  z-index: 1001;
+  filter: sepia(0.75);
 }

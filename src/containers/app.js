@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import DeckGL from '@deck.gl/react';
 import { PointCloudLayer, LineLayer, COORDINATE_SYSTEM, TextLayer, OrbitView } from 'deck.gl';
 import {
@@ -9,6 +9,7 @@ import Controller from '../components';
 
 const MAPBOX_TOKEN = process.env.MAPBOX_ACCESS_TOKEN; //Acquire Mapbox accesstoken
 const titleimg = '../../data/title.png';
+const titleimglist = [titleimg,titleimg,titleimg,titleimg,titleimg]
 
 const INITIAL_VIEW_STATE = {
   target: [0, 0, 0],
@@ -38,7 +39,7 @@ const App = (props)=>{
   const [textSiza, setTextSiza] = useState(10);
   const [clusterColor, setClusterColor] = useState(undefined);
   const [shikibetuTbl, setShikibetuTbl] = useState([]);
-  let dragged = {target:null,x:0,y:0}
+  let dragged = {target:null,x:0,y:0,degree:0}
   const { actions, viewport, movesbase, movedData, loading, settime } = props;
 
   const text3dData = movedData.filter(x=>x.position)
@@ -114,29 +115,6 @@ const App = (props)=>{
     actions.setLeading(0);
     actions.setTrailing(0);
     actions.setAnimatePause(true);
-    document.addEventListener("dragstart", event => {
-      const className = event.target.className
-      if(className.includes('drag-and-drop')){
-        dragged.target = event.target
-      }else{
-        dragged.target = event.target.closest('.drag-and-drop')
-      }
-      dragged.x = event.pageX - dragged.target.offsetLeft
-      dragged.y = event.pageY - dragged.target.offsetTop
-      dragged.target.classList.add("drag")
-    })
-    document.addEventListener("dragover", event => {
-      event.preventDefault()
-    })
-    document.addEventListener("drop", event => {
-      event.preventDefault()
-      const drag = document.getElementsByClassName("drag")[0]
-      drag.style.top = event.pageY - dragged.y + "px";
-      drag.style.left = event.pageX - dragged.x + "px";
-      dragged.target.classList.remove("drag")
-      dragged = {target:null,x:0,y:0}
-      console.log(`drop ${drag.style.top} ${drag.style.left}`)
-    })
   },[])
 
   const updateState = (updateData)=>{
@@ -269,7 +247,8 @@ const App = (props)=>{
           ]}
         />
       </div>
-      <div draggable="true" className="harmovis_footer drag-and-drop">
+      <MovingImage titleimglist={titleimglist}/>
+      <div className="harmovis_footer">
         target:{`[${viewState.target[0]},${viewState.target[1]},${viewState.target[2]}]`}&nbsp;
         rotationX:{viewState.rotationX}&nbsp;
         rotationOrbit:{viewState.rotationOrbit}&nbsp;
@@ -286,15 +265,121 @@ const App = (props)=>{
           }
         </g>
       </svg>
-      <div draggable="true" className="drag-and-drop">
-        <img src={titleimg}/>
-      </div>
-      <div draggable="true">
-        <img className="drag-and-drop" src={titleimg}/>
-      </div>
       <LoadingIcon loading={loading} />
       <FpsDisplay />
     </Container>
   );
 }
 export default connectToHarmowareVis(App);
+
+const MovingImage = (props)=>{
+  return(<div id="imagecanvas">{props.titleimglist.map((titleimg,idx)=>{
+    const top = (idx*0)%window.innerHeight
+    const left = (idx*0)%window.innerWidth
+    return(<MovingElement key={idx} imgsrc={titleimg} title={`${idx+1} : ${titleimg}`}
+      style={{top:top,left:left,...props.style}}
+      className={props.className}/>)
+  })}</div>
+  )
+}
+MovingImage.defaultProps = {
+  className: "click-and-move",
+  style: {}
+}
+
+const MovingElement = (props)=>{
+  const {className, imgsrc, style, title} = props
+  let dragged = {target:undefined,x:0,y:0,degree:0,rotate:0,scaleX:1,scaleY:1}
+  const imgRef = React.useRef(undefined)
+
+  React.useEffect(()=>{
+    if(imgRef.current !== undefined){
+      imgRef.current.addEventListener('mousedown',event=>{
+        const targetclassName = event.target.className
+        if(targetclassName.includes(className)){
+          dragged.target = event.target
+        }else{
+          dragged.target = event.target.closest(`.${className}`)
+        }
+        dragged.x = event.pageX - dragged.target.offsetLeft
+        dragged.y = event.pageY - dragged.target.offsetTop
+        dragged.degree = (Math.atan2(event.pageY-(dragged.target.offsetTop+(dragged.target.clientHeight/2)),
+        event.pageX-(dragged.target.offsetLeft+(dragged.target.clientWidth/2))) * 180 / Math.PI) + 180
+        const transform = dragged.target.style.transform
+        if(transform.includes('rotate')){
+          const rotate = transform.match(/rotate\(-{0,1}[0-9.]+deg\)/g)[0]
+          dragged.rotate = parseFloat(rotate.match(/-{0,1}[0-9.]+/g)[0])
+        }else{
+          dragged.rotate = 0
+        }
+
+        if(transform.includes('scaleX')){
+          const scaleX = transform.match(/scaleX\(-{0,1}[0-9.]+\)/g)[0]
+          dragged.scaleX = parseFloat(scaleX.match(/-{0,1}[0-9.]+/g)[0])
+        }else{
+          dragged.scaleX = 1
+        }
+        if(transform.includes('scaleY')){
+          const scaleY = transform.match(/scaleY\(-{0,1}[0-9.]+\)/g)[0]
+          dragged.scaleY = parseFloat(scaleY.match(/-{0,1}[0-9.]+/g)[0])
+        }else{
+          dragged.scaleY = 1
+        }
+
+        if(event.ctrlKey){
+          dragged.target.classList.add('rotate')
+        }else{
+          dragged.target.classList.add('drag')
+        }
+        const select = document.getElementsByClassName('select')
+        for(const e of select){
+          e.classList.remove('select')
+        }
+        dragged.target.classList.add('select')
+      })
+      imgRef.current.addEventListener('mousemove', event=>{
+        event.preventDefault()
+        if(dragged.target !== undefined){
+          const drag = document.getElementsByClassName('drag')[0]
+          if(drag){
+            dragged.target.style.top = event.pageY - dragged.y + "px";
+            dragged.target.style.left = event.pageX - dragged.x + "px";
+          }
+          const rotate = document.getElementsByClassName('rotate')[0]
+          if(rotate){
+            const degree = (Math.atan2(event.pageY-(dragged.target.offsetTop+(dragged.target.clientHeight/2)),
+            event.pageX-(dragged.target.offsetLeft+(dragged.target.clientWidth/2))) * 180 / Math.PI) + 180
+            if(dragged.degree !== degree){
+              const rotate = (dragged.rotate - (dragged.degree - degree)) % 360
+              dragged.target.style.transform = `rotate(${rotate}deg) scaleX(${dragged.scaleX})  scaleY(${dragged.scaleY})`;
+            }
+          }
+        }
+      })
+      imgRef.current.addEventListener('mouseup', event=>{
+        event.preventDefault()
+        const drag = document.getElementsByClassName('drag')[0]
+        if(drag){
+          drag.classList.remove('drag')
+          dragged = {target:undefined,x:0,y:0,degree:0,rotate:0,scaleX:1,scaleY:1}
+        }
+        const rotate = document.getElementsByClassName('rotate')[0]
+        if(rotate){
+          rotate.classList.remove('rotate')
+          dragged = {target:undefined,x:0,y:0,degree:0,rotate:0,scaleX:1,scaleY:1}
+        }
+      })
+      imgRef.current.addEventListener('wheel', event=>{
+        console.log(`wheelDelta:${event.wheelDelta}`)
+      })
+    }
+  },[imgRef])
+
+  return(
+    <div><img ref={imgRef} className={className} src={imgsrc} style={style} title={title}/></div>
+  )
+}
+MovingElement.defaultProps = {
+  className: "click-and-move",
+  style: {}
+}

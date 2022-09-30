@@ -308,6 +308,7 @@ const MovingElement = (props)=>{
 
   React.useEffect(()=>{
     if(imgRef.current !== undefined){
+      imgRef.current.ondragstart = ()=>false
       imgRef.current.addEventListener('mousedown',event=>{
         const targetclassName = event.target.className
         if(targetclassName.includes(className)){

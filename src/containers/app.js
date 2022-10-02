@@ -381,7 +381,7 @@ const MovingElement = (props)=>{
   },[imgRef])
 
   return(
-    <div><img ref={imgRef} className={className} src={imgsrc} style={style} title={title}/></div>
+    <div><img draggable={false} ref={imgRef} className={className} src={imgsrc} style={style} title={title}/></div>
   )
 }
 MovingElement.defaultProps = {

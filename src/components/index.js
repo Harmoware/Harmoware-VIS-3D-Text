@@ -38,6 +38,14 @@ export default class Controller extends React.Component {
     setTextSiza(+e.target.value)
   }
 
+  onClick(){
+    const clickAndMove = document.getElementsByClassName('click-and-move')
+    for(let i=0; i<clickAndMove.length; i=i+1){
+      clickAndMove[i].style.top = `${i*100}px`
+      clickAndMove[i].style.left = `${i*100}px`
+    }
+  }
+
   render() {
 
     const { actions, inputFileName, animatePause, animateReverse, leading,
@@ -86,6 +94,9 @@ export default class Controller extends React.Component {
             <label htmlFor="setTextSiza">{`Text Size : `}</label>
               <input type="range" value={textSiza} min={0} max={20} step={0.2} onChange={this.setTextSiza.bind(this)}
                 className='harmovis_input_range' id='setTextSiza' title={clusterNum}/>
+            </li>
+            <li className="flex_row">
+              <button onClick={this.onClick.bind(this)} className='harmovis_button'>align</button>
             </li>
             </ul>
             <TransformController/>

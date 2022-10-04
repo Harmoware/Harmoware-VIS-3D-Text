@@ -40,9 +40,27 @@ export default class Controller extends React.Component {
 
   onClick(){
     const clickAndMove = document.getElementsByClassName('click-and-move')
+    let maxwidth = 0
+    let maxheight = 0
+    for(const elements of clickAndMove){
+      maxwidth = Math.max(elements.width,maxwidth)
+      maxheight = Math.max(elements.height,maxheight)
+    }
+    const count_x_max = ((window.innerWidth-240) / maxwidth)|0
+    const count_y_max = (window.innerHeight / maxheight)|0
+    let count_x = 0
+    let count_y = 0
     for(let i=0; i<clickAndMove.length; i=i+1){
-      clickAndMove[i].style.top = `${i*100}px`
-      clickAndMove[i].style.left = `${i*100}px`
+      clickAndMove[i].style.top = `${count_y*maxheight}px`
+      clickAndMove[i].style.left = `${count_x*maxwidth}px`
+      count_x = count_x + 1
+      if(count_x >= count_x_max){
+        count_x = 0
+        count_y = count_y + 1
+        if(count_y >= count_y_max){
+          count_y = 0
+        }
+      }
     }
   }
 
@@ -96,7 +114,7 @@ export default class Controller extends React.Component {
                 className='harmovis_input_range' id='setTextSiza' title={clusterNum}/>
             </li>
             <li className="flex_row">
-              <button onClick={this.onClick.bind(this)} className='harmovis_button'>align</button>
+              <button onClick={this.onClick.bind(this)} className='harmovis_button'>Img Align</button>
             </li>
             </ul>
             <TransformController/>

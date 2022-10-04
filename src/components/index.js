@@ -38,7 +38,7 @@ export default class Controller extends React.Component {
     setTextSiza(+e.target.value)
   }
 
-  onClick(){
+  onClickAlign(){
     const clickAndMove = document.getElementsByClassName('click-and-move')
     let maxwidth = 0
     let maxheight = 0
@@ -114,7 +114,7 @@ export default class Controller extends React.Component {
                 className='harmovis_input_range' id='setTextSiza' title={clusterNum}/>
             </li>
             <li className="flex_row">
-              <button onClick={this.onClick.bind(this)} className='harmovis_button'>Img Align</button>
+              <button onClick={this.onClickAlign.bind(this)} className='harmovis_button'>Img Align</button>
             </li>
             </ul>
             <TransformController/>

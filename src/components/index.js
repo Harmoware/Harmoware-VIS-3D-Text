@@ -38,6 +38,11 @@ export default class Controller extends React.Component {
     setTextSiza(+e.target.value)
   }
 
+  setPointSiza(e){
+    const { setPointSiza } = this.props;
+    setPointSiza(+e.target.value)
+  }
+
   onClickAlign(){
     const clickAndMove = document.getElementsByClassName('click-and-move')
     let maxwidth = 0
@@ -67,7 +72,7 @@ export default class Controller extends React.Component {
   render() {
 
     const { actions, inputFileName, animatePause, animateReverse, leading,
-      settime, timeBegin, timeLength, clusterNum, textSiza } = this.props;
+      settime, timeBegin, timeLength, clusterNum, textSiza, pointSiza } = this.props;
     const { text3dDataFileName } = inputFileName;
 
     return (
@@ -111,7 +116,12 @@ export default class Controller extends React.Component {
             <li className="flex_row">
             <label htmlFor="setTextSiza">{`Text Size : `}</label>
               <input type="range" value={textSiza} min={0} max={20} step={0.2} onChange={this.setTextSiza.bind(this)}
-                className='harmovis_input_range' id='setTextSiza' title={clusterNum}/>
+                className='harmovis_input_range' id='setTextSiza' title={textSiza}/>
+            </li>
+            <li className="flex_row">
+            <label htmlFor="setPointSiza">{`Point Size : `}</label>
+              <input type="range" value={pointSiza} min={0} max={8} step={0.1} onChange={this.setPointSiza.bind(this)}
+                className='harmovis_input_range' id='setPointSiza' title={pointSiza}/>
             </li>
             <li className="flex_row">
               <button onClick={this.onClickAlign.bind(this)} className='harmovis_button'>Img Align</button>

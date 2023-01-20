@@ -37,6 +37,7 @@ const App = (props)=>{
   const [saveDataset, setDataset] = useState([[]])
   const [clusterNum, setClusterNum] = useState(10);
   const [textSiza, setTextSiza] = useState(10);
+  const [pointSiza, setPointSiza] = useState(4);
   const [clusterColor, setClusterColor] = useState(undefined);
   const [shikibetuTbl, setShikibetuTbl] = useState([]);
   let dragged = {target:null,x:0,y:0,degree:0}
@@ -144,7 +145,7 @@ const App = (props)=>{
     }
   }
 
-  const getSize = (x)=>{
+  const getTextSize = (x)=>{
     if(shikibetuTbl.length === 0 || shikibetuTbl.includes(x.shikibetu)){
       return textSiza
     }
@@ -158,7 +159,7 @@ const App = (props)=>{
       coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
       getPosition: x => x.position,
       getColor: x => clusterColor[x.shikibetu] || [0,0,0xff,0xff],
-      pointSize: 4,
+      pointSize: pointSiza,
       pickable: true,
       onHover,
       onClick
@@ -174,7 +175,7 @@ const App = (props)=>{
       getPosition: x => x.position,
       getText: x => x.text,
       getColor: x => clusterColor[x.shikibetu] || [0,0,0xff,0xff],
-      getSize: x => getSize(x),
+      getSize: x => getTextSize(x),
       getTextAnchor: 'start',
       pickable: true,
       onHover,
@@ -186,7 +187,8 @@ const App = (props)=>{
     <Container {...props}>
       <Controller {...props} updateViewState={updateViewState} viewState={viewState}
       clusterNum={clusterNum} setClusterNum={setClusterNum}
-      textSiza={textSiza} setTextSiza={setTextSiza}/>
+      textSiza={textSiza} setTextSiza={setTextSiza}
+      pointSiza={pointSiza} setPointSiza={setPointSiza}/>
       <div className="harmovis_area">
         <DeckGL
           views={new OrbitView({orbitAxis: 'z', fov: 50})}

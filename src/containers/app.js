@@ -47,6 +47,10 @@ const App = (props)=>{
   const dataset = text3dData.map((x)=>x.position).sort((a,b)=>{a[0]-b[0]})
 
   React.useEffect(()=>{
+    setTimeout(()=>{InitialFileRead(props)},1000)
+  },[])
+
+  React.useEffect(()=>{
     if(movesbase.length === 0){
       setClusterColor(undefined)
       setShikibetuTbl([])
@@ -389,4 +393,61 @@ const MovingElement = (props)=>{
 MovingElement.defaultProps = {
   className: "click-and-move",
   style: {}
+}
+
+const InitialFileRead = (props)=>{
+  const { actions } = props;
+  const request = new XMLHttpRequest();
+  request.open('GET', 'data/3d_time_data.csv');
+  request.responseType = 'text';
+  request.send();
+  actions.setLoading(true);
+  actions.setMovesBase([]);
+  request.onload = function() {
+    let text3dData = null;
+    try {
+      const linedata = request.response.split(/(\r\n|\n)/);
+      const readdata = linedata.map((lineArray)=>{
+        return lineArray.split(',')
+      })
+      const dataLength = readdata[0].length
+      const filterData = readdata.filter((data)=>data.length===dataLength)
+      let endTime = Number.MIN_SAFE_INTEGER
+      const workData = filterData.map((data)=>{
+        const [strElapsedtime,shikibetu,x,y,z,text] = data
+        const elapsedtime = parseInt(strElapsedtime)*10
+        endTime = Math.max(endTime,elapsedtime)
+        return {
+            elapsedtime:elapsedtime,
+            shikibetu:parseInt(shikibetu),
+            position: [parseFloat(x),parseFloat(y),parseFloat(z)],
+            text: text.slice(1,-1),
+        }
+      })
+      const idTable = workData.reduce((prev,current)=>{
+        if(String(current.shikibetu) in prev){
+            prev[current.shikibetu].push(current)
+        }else{
+            prev[current.shikibetu] = [current]
+        }
+        return prev
+      },{})
+      text3dData = Object.values(idTable).map((data)=>{
+        data.push({elapsedtime:endTime+1})
+        return {operation:data}
+      })
+    } catch (exception) {
+      actions.setInputFilename({ text3dDataFileName: null });
+      actions.setLoading(false);
+      return;
+    }
+    console.log({text3dData})
+    actions.setInputFilename({ text3dDataFileName: 'sample data' });
+    actions.setMovesBase(text3dData);
+    actions.setRoutePaths([]);
+    actions.setClicked(null);
+    actions.setAnimatePause(false);
+    actions.setAnimateReverse(false);
+    actions.setLoading(false);
+  }
 }

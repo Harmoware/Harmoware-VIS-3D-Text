@@ -8,7 +8,7 @@ import Clustering from 'density-clustering';
 import Controller from '../components';
 
 const MAPBOX_TOKEN = process.env.MAPBOX_ACCESS_TOKEN; //Acquire Mapbox accesstoken
-const titleimg = '../../data/title.png';
+const titleimg = 'data/title.png';
 const titleimglist = [titleimg,titleimg,titleimg,titleimg,titleimg]
 
 const INITIAL_VIEW_STATE = {
@@ -191,7 +191,7 @@ const App = (props)=>{
       pointSiza={pointSiza} setPointSiza={setPointSiza}/>
       <div className="harmovis_area">
         <DeckGL
-          views={new OrbitView({orbitAxis: 'z', fov: 50})}
+          views={new OrbitView({orbitAxis: 'Z', fov: 50})}
           viewState={viewState} controller={{scrollZoom:{smooth:true}}}
           onViewStateChange={v => updateViewState(v.viewState)}
           layers={[
